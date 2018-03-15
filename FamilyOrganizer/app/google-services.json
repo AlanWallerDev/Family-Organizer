@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "306921467549",
+    "firebase_url": "https://familyorganizer-88f43.firebaseio.com",
+    "project_id": "familyorganizer-88f43",
+    "storage_bucket": "familyorganizer-88f43.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306921467549:android:4cf6228d755e09d9",
+        "android_client_info": {
+          "package_name": "com.waller.alan.familyorganizer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306921467549-71lp25bek2rti906pb5hir31jbjg8uc1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.waller.alan.familyorganizer",
+            "certificate_hash": "293bc874420326bfdcfc74cc3e87979e2a217283"
+          }
+        },
+        {
+          "client_id": "306921467549-osih28c3uh5lj81at2isnvuaagsb6vvs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdGiV-KfbUAc9cjumPMppIeRUjjQdE1Dw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306921467549-osih28c3uh5lj81at2isnvuaagsb6vvs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
