@@ -21,6 +21,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    //TODO: Set up navigation drawer in on create https://developer.android.com/training/implementing-navigation/nav-drawer.html
+
     private static final String ANONYMOUS = "anonymous";
     private static final int RC_SIGN_IN = 100;
 
@@ -99,11 +101,11 @@ public class MainActivity extends AppCompatActivity {
         detachDatabaseListener();
 
     }
-    //TODO: Figure out the signout menu
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        inflater.inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -116,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     private void onSignedIn(String nUsername){
 
