@@ -2,9 +2,12 @@ package com.waller.alan.familyorganizer;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.firebase.ui.auth.AuthUI;
@@ -26,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String ANONYMOUS = "anonymous";
     private static final int RC_SIGN_IN = 100;
 
+    private DrawerLayout drawerLayout;
+
     private String username;
 
     //entrypoint to the firebase real time database
@@ -44,6 +49,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
         username = ANONYMOUS;
 
@@ -78,6 +89,32 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        drawerLayout = findViewById(R.id.drawer_layout);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        // set item as selected to persist highlight
+                        menuItem.setChecked(true);
+                        // close drawer when item is tapped
+                        drawerLayout.closeDrawers();
+
+                        // Add code here to update the UI based on the item selected
+                        // For example, swap UI fragments here
+
+                        switch(menuItem.getItemId()){
+                            case R.id.sign_out_menu:
+                                AuthUI.getInstance().signOut(MainActivity.this);
+                                break;
+                        }
+
+
+                        return true;
+                    }
+                });
+
 
 
     }
@@ -101,13 +138,13 @@ public class MainActivity extends AppCompatActivity {
         detachDatabaseListener();
 
     }
-
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
         return true;
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -115,6 +152,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.sign_out_menu:
                 AuthUI.getInstance().signOut(MainActivity.this);
                 break;
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
