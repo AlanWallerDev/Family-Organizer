@@ -194,13 +194,15 @@ public class MessageActivity extends AppCompatActivity {
                         switch(menuItem.getItemId()){
                             case R.id.sign_out_menu:
                                 AuthUI.getInstance().signOut(MessageActivity.this);
+                                Intent intent = new Intent(currentActivity, MainActivity.class);
+                                startActivity(intent);
                                 break;
                             case R.id.messages_menu:
-                                Toast.makeText(currentActivity, "You are currently in the Main Activity", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(currentActivity, "You are currently in the Message Activity", Toast.LENGTH_SHORT).show();
                                 break;
 
                             case R.id.main_menu:
-                                Intent intent = new Intent(currentActivity, MainActivity.class);
+                                intent = new Intent(currentActivity, MainActivity.class);
                                 startActivity(intent);
                                 break;
                         }
