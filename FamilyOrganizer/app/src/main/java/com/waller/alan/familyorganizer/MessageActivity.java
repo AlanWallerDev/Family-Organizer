@@ -4,14 +4,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -23,22 +33,31 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+/**
+ * Created by t00053669 on 3/21/2018.
+ */
 
-    //TODO: Set up navigation drawer in on create https://developer.android.com/training/implementing-navigation/nav-drawer.html
+public class MessageActivity extends AppCompatActivity {
     private static final String ANONYMOUS = "anonymous";
     private static final int RC_SIGN_IN = 100;
-    private static final String TAG = "Main Activity";
+    public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
+    private static final String TAG = "Message Activity";
+
+    private DrawerLayout drawerLayout;
+    private String username;
     private static Context currentActivity;
 
 
-    private DrawerLayout drawerLayout;
-
-    private String username;
-
+    private ListView messageListView;
+    private MessageAdapter messageAdapter;
+    private ProgressBar progressBar;
+    private ImageButton photoPickerButton;
+    private EditText messageEditText;
+    private Button sendButton;
 
     //entrypoint to the firebase real time database
     private FirebaseDatabase firebaseDatabase;
@@ -53,9 +72,9 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener authStateListener;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.message_activity);
         currentActivity = this;
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -63,7 +82,66 @@ public class MainActivity extends AppCompatActivity {
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        messageListView = (ListView) findViewById(R.id.messageListView);
+        photoPickerButton = (ImageButton) findViewById(R.id.photoPickerButton);
+        messageEditText = (EditText) findViewById(R.id.messageEditText);
+        sendButton = (Button) findViewById(R.id.sendButton);
 
+        // Initialize message ListView and its adapter
+        List<Message> messages = new ArrayList<>();
+        messageAdapter = new MessageAdapter(this, R.layout.item_message, messages);
+        messageListView.setAdapter(messageAdapter);
+
+        // Initialize progress bar
+        progressBar.setVisibility(ProgressBar.INVISIBLE);
+
+        // ImagePickerButton shows an image picker to upload a image for a message
+        photoPickerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: Fire an intent to show an image picker
+            }
+        });
+
+        messageEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.toString().trim().length() > 0) {
+                    sendButton.setEnabled(true);
+                } else {
+                    sendButton.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+
+
+
+
+        messageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(DEFAULT_MSG_LENGTH_LIMIT)});
+
+        // Send button sends a message and clears the EditText
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: Send messages on click
+
+                Message message = new Message(messageEditText.getText().toString(),username, null);
+
+                databaseReference.push().setValue(message);
+
+                // Clear input box
+                messageEditText.setText("");
+            }
+        });
 
         username = ANONYMOUS;
 
@@ -115,14 +193,15 @@ public class MainActivity extends AppCompatActivity {
 
                         switch(menuItem.getItemId()){
                             case R.id.sign_out_menu:
-                                AuthUI.getInstance().signOut(MainActivity.this);
+                                AuthUI.getInstance().signOut(MessageActivity.this);
                                 break;
                             case R.id.messages_menu:
-                                Intent intent = new Intent(currentActivity, MessageActivity.class);
-                                startActivity(intent);
-                                break;
-                            case R.id.main_menu:
                                 Toast.makeText(currentActivity, "You are currently in the Main Activity", Toast.LENGTH_SHORT).show();
+                                break;
+
+                            case R.id.main_menu:
+                                Intent intent = new Intent(currentActivity, MainActivity.class);
+                                startActivity(intent);
                                 break;
                         }
 
@@ -132,8 +211,8 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 
-
     }
+
 
     protected void onResume(){
 
@@ -160,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.sign_out_menu:
-                AuthUI.getInstance().signOut(MainActivity.this);
+                AuthUI.getInstance().signOut(MessageActivity.this);
                 break;
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
@@ -192,12 +271,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void attachDatabaseListener(){
+        Log.d(TAG, "attachDatabaseListener Method Accessed");
         if(childEventListener == null) {
+            Log.d(TAG, "DB Child Event Listener Attached");
             childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     //TODO: Add functionality when database is updated here
-
+                    Message message = dataSnapshot.getValue(Message.class);
+                    messageAdapter.add(message);
+                    Log.d(TAG, "onChildAdded function accessed");
                 }
 
                 @Override
@@ -225,7 +308,4 @@ public class MainActivity extends AppCompatActivity {
             databaseReference.addChildEventListener(childEventListener);
         }
     }
-
-
-
 }
