@@ -17,4 +17,9 @@
         android:icon="@drawable/ic_search_black_24dp"
         android:title="@string/main_menu"
         app:showAsAction="never"/>
+    <item
+        android:id = "@+id/add_contacts_menu"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="@string/add_contacts"
+        app:showAsAction="never"/>
 </menu>

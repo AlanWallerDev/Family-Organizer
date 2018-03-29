@@ -9,6 +9,8 @@ public class Message {
     private String text;
     private String name;
     private String photoUrl;
+    private String receiver;
+
 
     public Message() {
     }
@@ -17,6 +19,7 @@ public class Message {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;
+        this.receiver = receiver;
     }
 
     public String getText() {
@@ -42,5 +45,6 @@ public class Message {
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
     }
+
 
 }

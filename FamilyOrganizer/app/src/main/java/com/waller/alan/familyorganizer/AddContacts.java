@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,6 +13,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -26,19 +30,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+/**
+ * Created by t00053669 on 3/28/2018.
+ */
 
-    //TODO: Set up navigation drawer in on create https://developer.android.com/training/implementing-navigation/nav-drawer.html
+public class AddContacts extends AppCompatActivity {
     private static final String ANONYMOUS = "anonymous";
+    private static final String TAG = "Add Contact Activity";
     private static final int RC_SIGN_IN = 100;
-    private static final String TAG = "Main Activity";
-    private static Context currentActivity;
-
 
     private DrawerLayout drawerLayout;
-
     private String username;
-
+    private String email;
+    private static Context currentActivity;
 
     //entrypoint to the firebase real time database
     private FirebaseDatabase firebaseDatabase;
@@ -52,10 +56,14 @@ public class MainActivity extends AppCompatActivity {
     //looks for AuthState Change
     private FirebaseAuth.AuthStateListener authStateListener;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    private TextView emailView;
+    private TextView nameView;
+    private TextView relationView;
+    private Button addButton;
+
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.add_contacts_activity);
         currentActivity = this;
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -63,13 +71,17 @@ public class MainActivity extends AppCompatActivity {
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
-
+        emailView = (TextView) findViewById(R.id.emailView);
+        nameView = (TextView) findViewById(R.id.nameView);
+        relationView = (TextView) findViewById(R.id.relationView);
+        addButton = (Button) findViewById(R.id.addButton);
 
         username = ANONYMOUS;
+        email = ANONYMOUS;
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
-        databaseReference = firebaseDatabase.getReference().child("messages");
+        databaseReference = firebaseDatabase.getReference().child("contacts");
 
         final List<AuthUI.IdpConfig> providers = Arrays.asList(
 
@@ -88,6 +100,8 @@ public class MainActivity extends AppCompatActivity {
                 if(user != null){
                     //logged in state
                     onSignedIn(user.getDisplayName());
+                    email = user.getEmail();
+
 
                 }else{
                     //logged out state
@@ -115,18 +129,21 @@ public class MainActivity extends AppCompatActivity {
 
                         switch(menuItem.getItemId()){
                             case R.id.sign_out_menu:
-                                AuthUI.getInstance().signOut(MainActivity.this);
-                                break;
-                            case R.id.messages_menu:
-                                Intent intent = new Intent(currentActivity, MessageActivity.class);
+                                AuthUI.getInstance().signOut(AddContacts.this);
+                                Intent intent = new Intent(currentActivity, MainActivity.class);
                                 startActivity(intent);
                                 break;
+                            case R.id.messages_menu:
+                                Intent MIntent = new Intent(currentActivity, MessageActivity.class);
+                                startActivity(MIntent);
+                                break;
+
                             case R.id.main_menu:
-                                Toast.makeText(currentActivity, "You are currently in the Main Activity", Toast.LENGTH_SHORT).show();
+                                intent = new Intent(currentActivity, MainActivity.class);
+                                startActivity(intent);
                                 break;
                             case R.id.add_contacts_menu:
-                                Intent ACIntent = new Intent(currentActivity, AddContacts.class);
-                                startActivity(ACIntent);
+                                Toast.makeText(currentActivity, "You are currently in the Add Contact Activity", Toast.LENGTH_SHORT).show();
                                 break;
                         }
 
@@ -135,8 +152,18 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Contact contact = new Contact(nameView.getText().toString(), emailView.getText().toString(), relationView.getText().toString(), email);
 
 
+                databaseReference.push().setValue(contact);
+                nameView.setText("");
+                emailView.setText("");
+                relationView.setText("");
+            }
+        });
     }
 
     protected void onResume(){
@@ -164,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.sign_out_menu:
-                AuthUI.getInstance().signOut(MainActivity.this);
+                AuthUI.getInstance().signOut(AddContacts.this);
                 break;
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
@@ -201,11 +228,17 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     //TODO: Add functionality when database is updated here
+                    Log.d(TAG, "Contact Added");
 
                 }
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    if(dataSnapshot.exists()){
+                        Toast.makeText(AddContacts.this, "Contact Already Exists!", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(AddContacts.this, "Contact Added", Toast.LENGTH_SHORT).show();
+                    }
 
                 }
 
@@ -229,7 +262,4 @@ public class MainActivity extends AppCompatActivity {
             databaseReference.addChildEventListener(childEventListener);
         }
     }
-
-
-
 }

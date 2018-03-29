@@ -205,6 +205,10 @@ public class MessageActivity extends AppCompatActivity {
                                 intent = new Intent(currentActivity, MainActivity.class);
                                 startActivity(intent);
                                 break;
+                            case R.id.add_contacts_menu:
+                                Intent ACIntent = new Intent(currentActivity, AddContacts.class);
+                                startActivity(ACIntent);
+                                break;
                         }
 
 
@@ -273,16 +277,13 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void attachDatabaseListener(){
-        Log.d(TAG, "attachDatabaseListener Method Accessed");
         if(childEventListener == null) {
-            Log.d(TAG, "DB Child Event Listener Attached");
             childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     //TODO: Add functionality when database is updated here
                     Message message = dataSnapshot.getValue(Message.class);
                     messageAdapter.add(message);
-                    Log.d(TAG, "onChildAdded function accessed");
                 }
 
                 @Override
