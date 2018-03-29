@@ -128,21 +128,6 @@ public class MessageActivity extends AppCompatActivity {
 
         messageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(DEFAULT_MSG_LENGTH_LIMIT)});
 
-        // Send button sends a message and clears the EditText
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: Send messages on click
-
-                Message message = new Message(messageEditText.getText().toString(),username, null);
-
-                databaseReference.push().setValue(message);
-
-                // Clear input box
-                messageEditText.setText("");
-            }
-        });
-
         username = ANONYMOUS;
 
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -215,6 +200,22 @@ public class MessageActivity extends AppCompatActivity {
                         return true;
                     }
                 });
+
+        // Send button sends a message and clears the EditText
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: Send messages on click
+                String email = firebaseAuth.getCurrentUser().getEmail();
+                Message message = new Message(messageEditText.getText().toString(),username, email);
+
+                databaseReference.push().setValue(message);
+
+                // Clear input box
+                messageEditText.setText("");
+            }
+        });
+
 
 
     }

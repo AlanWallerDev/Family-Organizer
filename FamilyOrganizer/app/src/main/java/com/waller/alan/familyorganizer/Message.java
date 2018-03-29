@@ -15,15 +15,23 @@ public class Message {
     public Message() {
     }
     //TODO: Remember you will need to add a who to send to value (reciever?) when the ability to add users is implemented
-    public Message(String text, String name, String photoUrl) {
+    public Message(String text, String name, String receiver) {
         this.text = text;
         this.name = name;
-        this.photoUrl = photoUrl;
+       // this.photoUrl = photoUrl;
         this.receiver = receiver;
     }
 
     public String getText() {
         return text;
+    }
+
+    public String getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(String receiver) {
+        this.receiver = receiver;
     }
 
     public void setText(String text) {

@@ -235,12 +235,7 @@ public class AddContacts extends AppCompatActivity {
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    if(dataSnapshot.exists()){
-                        Toast.makeText(AddContacts.this, "Contact Already Exists!", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(AddContacts.this, "Contact Added", Toast.LENGTH_SHORT).show();
-                    }
-
+                    //todo: determine how to prevent duplicate contacts
                 }
 
                 @Override
