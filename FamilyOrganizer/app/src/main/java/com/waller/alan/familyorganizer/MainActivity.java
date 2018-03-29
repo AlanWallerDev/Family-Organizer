@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
 
     private String username;
+    private String userID;
 
 
     //entrypoint to the firebase real time database
@@ -180,6 +181,11 @@ public class MainActivity extends AppCompatActivity {
         attachDatabaseListener();
 
     }
+
+    private void checkForFirstTime(String uID){
+
+    }
+
 
     private void onSignedOutCleanup(){
 

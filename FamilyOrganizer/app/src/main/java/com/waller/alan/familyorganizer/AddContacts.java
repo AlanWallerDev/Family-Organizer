@@ -162,6 +162,7 @@ public class AddContacts extends AppCompatActivity {
                 nameView.setText("");
                 emailView.setText("");
                 relationView.setText("");
+                Intent mIntent = new Intent(currentActivity, MainActivity.class);
             }
         });
     }
