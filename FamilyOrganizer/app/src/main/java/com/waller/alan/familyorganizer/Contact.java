@@ -7,13 +7,13 @@ package com.waller.alan.familyorganizer;
 public class Contact {
 
     private String displayName;
-    private String userName;
+    private String email;
     private String contactOwner;
     private String relationship;
 
-    public Contact(String displayName, String userName, String relationship, String contactOwner) {
+    public Contact(String displayName, String email, String relationship, String contactOwner) {
         this.displayName = displayName;
-        this.userName = userName;
+        this.email = email;
         this.relationship = relationship;
         this.contactOwner = contactOwner;
     }
@@ -26,12 +26,12 @@ public class Contact {
         this.displayName = displayName;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setEmail(String userName) {
+        this.email = userName;
     }
 
     public String getRelationship() {
