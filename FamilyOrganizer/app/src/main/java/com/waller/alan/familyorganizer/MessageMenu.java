@@ -34,8 +34,7 @@ import java.util.List;
  */
 //todo: create activity which allows you to select from your contacts and when contact is selected
     // open a message activity that pulls all messages to and from that contact
-    //will need to access database to pull all the names of the contacts "owned" by this user
-    //and display them in a menu
+
 public class MessageMenu extends AppCompatActivity {
 
     private static final String ANONYMOUS = "anonymous";
@@ -74,6 +73,8 @@ public class MessageMenu extends AppCompatActivity {
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
+
+        contactListView = (ListView) findViewById(R.id.contactListView);
 
         username = ANONYMOUS;
 
@@ -133,13 +134,13 @@ public class MessageMenu extends AppCompatActivity {
                                 AuthUI.getInstance().signOut(MessageMenu.this);
                                 break;
                             case R.id.messages_menu:
-                                Intent intent = new Intent(currentActivity, MessageActivity.class);
-                                startActivity(intent);
+                                Toast.makeText(currentActivity, "You are currently in the Message Activity", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.main_menu:
-                                Toast.makeText(currentActivity, "You are currently in the Main Activity", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(currentActivity, MainActivity.class);
+                                startActivity(intent);
                                 break;
-                            case R.id.add_contacts_menu:
+                                case R.id.add_contacts_menu:
                                 Intent ACIntent = new Intent(currentActivity, AddContacts.class);
                                 startActivity(ACIntent);
                                 break;
@@ -214,6 +215,7 @@ public class MessageMenu extends AppCompatActivity {
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     //TODO: Add functionality when database is updated here
                     Contact contact = dataSnapshot.getValue(Contact.class);
+                    Log.d(TAG, contact.getEmail());
                     contactAdapter.add(contact);
 
                 }

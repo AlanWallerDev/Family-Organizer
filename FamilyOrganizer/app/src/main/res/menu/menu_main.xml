@@ -22,4 +22,5 @@
         android:icon="@drawable/ic_search_black_24dp"
         android:title="@string/add_contacts"
         app:showAsAction="never"/>
+
 </menu>

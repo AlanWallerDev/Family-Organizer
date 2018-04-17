@@ -11,6 +11,13 @@ public class Contact {
     private String contactOwner;
     private String relationship;
 
+    public Contact(){
+        displayName = "";
+        email = "";
+        relationship = "";
+        contactOwner = "";
+    }
+
     public Contact(String displayName, String email, String relationship, String contactOwner) {
         this.displayName = displayName;
         this.email = email;

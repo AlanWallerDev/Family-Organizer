@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
         username = ANONYMOUS;
 
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                                 AuthUI.getInstance().signOut(MainActivity.this);
                                 break;
                             case R.id.messages_menu:
-                                Intent intent = new Intent(currentActivity, MessageActivity.class);
+                                Intent intent = new Intent(currentActivity, MessageMenu.class);
                                 startActivity(intent);
                                 break;
                             case R.id.main_menu:

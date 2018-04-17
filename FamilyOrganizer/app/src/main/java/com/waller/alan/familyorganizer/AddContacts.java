@@ -3,6 +3,7 @@ package com.waller.alan.familyorganizer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -134,7 +135,7 @@ public class AddContacts extends AppCompatActivity {
                                 startActivity(intent);
                                 break;
                             case R.id.messages_menu:
-                                Intent MIntent = new Intent(currentActivity, MessageActivity.class);
+                                Intent MIntent = new Intent(currentActivity, MessageMenu.class);
                                 startActivity(MIntent);
                                 break;
 

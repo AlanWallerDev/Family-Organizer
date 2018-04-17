@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FamilyOrganizer.iml" filepath="$PROJECT_DIR$/FamilyOrganizer.iml" />
-      <module fileurl="file://C:\Family-Organizer\FamilyOrganizer\FamilyOrganizer.iml" filepath="C:\Family-Organizer\FamilyOrganizer\FamilyOrganizer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Family-Organizer\FamilyOrganizer\app\app.iml" filepath="C:\Family-Organizer\FamilyOrganizer\app\app.iml" />
     </modules>
   </component>
 </project>
