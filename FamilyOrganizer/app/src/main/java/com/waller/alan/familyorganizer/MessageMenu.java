@@ -172,9 +172,8 @@ public class MessageMenu extends AppCompatActivity {
                 });
 
     }
-
+    //todo: Figure out how to clear the views on pause so the list does not duplicate
     protected void onResume(){
-
         super.onResume();
         if(firebaseAuth != null) {
             firebaseAuth.addAuthStateListener(authStateListener);
@@ -183,7 +182,6 @@ public class MessageMenu extends AppCompatActivity {
     }
 
     protected void onPause(){
-
         super.onPause();
         if(authStateListener != null){
             firebaseAuth.removeAuthStateListener(authStateListener);
