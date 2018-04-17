@@ -1,7 +1,9 @@
 package com.waller.alan.familyorganizer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +15,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -82,6 +87,21 @@ public class MessageMenu extends AppCompatActivity {
         List<Contact> contacts = new ArrayList<>();
         contactAdapter = new ContactAdapter(this, R.layout.item_contact, contacts);
         contactListView.setAdapter(contactAdapter);
+
+        contactListView.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Cursor cursor = (Cursor) contactListView.getItemAtPosition(position);
+                iD = cursor.getLong(cursor.getColumnIndexOrThrow("_id"));
+                //Toast.makeText(getActivity(), iD + "", Toast.LENGTH_LONG).show();
+                Intent result = new Intent(getApplicationContext(), MessageActivity.class);
+                // intent.putExtra("ID", iD); you will need to have it put the name of the contact for use in the message activity (this will be used to only get messages
+                //to and from the named contact
+                startActivity(result);
+
+            }
+        });
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
