@@ -14,7 +14,6 @@ public class Message {
 
     public Message() {
     }
-    //TODO: Remember you will need to add a who to send to value (reciever?) when the ability to add users is implemented
     public Message(String text, String name, String receiver) {
         this.text = text;
         this.name = name;

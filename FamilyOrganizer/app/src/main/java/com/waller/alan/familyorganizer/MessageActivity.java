@@ -47,6 +47,7 @@ public class MessageActivity extends AppCompatActivity {
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
     private static final String TAG = "Message Activity";
     private static String contact;
+    private static String contactEmail;
 
     private DrawerLayout drawerLayout;
     private String username;
@@ -90,6 +91,8 @@ public class MessageActivity extends AppCompatActivity {
         sendButton = (Button) findViewById(R.id.sendButton);
         Intent intent = getIntent();
         contact = intent.getStringExtra("name");
+        contactEmail = intent.getStringExtra("email");
+        Log.d(TAG, contactEmail + "");
 
         // Initialize message ListView and its adapter
         List<Message> messages = new ArrayList<>();
@@ -211,7 +214,7 @@ public class MessageActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // TODO: Send messages on click
                 String email = firebaseAuth.getCurrentUser().getEmail();
-                Message message = new Message(messageEditText.getText().toString(),username, email);
+                Message message = new Message(messageEditText.getText().toString(),username, contactEmail);
 
                 databaseReference.push().setValue(message);
 
@@ -289,7 +292,8 @@ public class MessageActivity extends AppCompatActivity {
                     //TODO: Add functionality when database is updated here
                     Message message = dataSnapshot.getValue(Message.class);
                     Log.d(TAG, "Message name: " + message.getName() + ", Message reciever: " + message.getReceiver() + ", User email: " + firebaseAuth.getCurrentUser().getEmail());
-                    if(message.getName().trim().toLowerCase().equals(contact) && message.getReceiver().trim().toLowerCase().equals(firebaseAuth.getCurrentUser().getEmail()))
+                    if((message.getName().trim().toLowerCase().equals(contact) && message.getReceiver().trim().toLowerCase().equals(firebaseAuth.getCurrentUser().getEmail()))
+                            || (message.getName().trim().toLowerCase().equals(firebaseAuth.getCurrentUser().getDisplayName().toLowerCase()) && message.getReceiver().trim().toLowerCase().equals(contactEmail)))
                         messageAdapter.add(message);
                 }
 

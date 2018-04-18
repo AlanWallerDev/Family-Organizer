@@ -94,10 +94,13 @@ public class MessageMenu extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 TextView tv = (TextView) view.findViewById(R.id.nameTextView);
+                TextView tv2 = (TextView) view.findViewById(R.id.emailTextView);
                 String name = tv.getText().toString();
-
+                String email = tv2.getText().toString();
+                Log.d(TAG, name + " " + email);
                 Intent result = new Intent(getApplicationContext(), MessageActivity.class);
                 result.putExtra("name", name); //you will need to have it put the name of the contact for use in the message activity (this will be used to only get messages to and from the named contact
+                result.putExtra("email", email);
                 startActivity(result);
 
             }
