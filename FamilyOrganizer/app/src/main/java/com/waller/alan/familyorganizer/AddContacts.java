@@ -152,6 +152,8 @@ public class AddContacts extends AppCompatActivity {
                         return true;
                     }
                 });
+//todo: check all users of database to see if the submitted email address and name are valid
+        //how do I check the validated users of my firebase database??
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
