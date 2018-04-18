@@ -46,6 +46,7 @@ public class MessageActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 100;
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
     private static final String TAG = "Message Activity";
+    private static String contact;
 
     private DrawerLayout drawerLayout;
     private String username;
@@ -87,6 +88,8 @@ public class MessageActivity extends AppCompatActivity {
         photoPickerButton = (ImageButton) findViewById(R.id.photoPickerButton);
         messageEditText = (EditText) findViewById(R.id.messageEditText);
         sendButton = (Button) findViewById(R.id.sendButton);
+        Intent intent = getIntent();
+        contact = intent.getStringExtra("name");
 
         // Initialize message ListView and its adapter
         List<Message> messages = new ArrayList<>();
@@ -183,7 +186,8 @@ public class MessageActivity extends AppCompatActivity {
                                 startActivity(intent);
                                 break;
                             case R.id.messages_menu:
-                                Toast.makeText(currentActivity, "You are currently in the Message Activity", Toast.LENGTH_SHORT).show();
+                                Intent intent3 = new Intent(currentActivity, MessageMenu.class);
+                                startActivity(intent3);
                                 break;
 
                             case R.id.main_menu:
@@ -284,7 +288,9 @@ public class MessageActivity extends AppCompatActivity {
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     //TODO: Add functionality when database is updated here
                     Message message = dataSnapshot.getValue(Message.class);
-                    messageAdapter.add(message);
+                    Log.d(TAG, "Message name: " + message.getName() + ", Message reciever: " + message.getReceiver() + ", User email: " + firebaseAuth.getCurrentUser().getEmail());
+                    if(message.getName().trim().toLowerCase().equals(contact) && message.getReceiver().trim().toLowerCase().equals(firebaseAuth.getCurrentUser().getEmail()))
+                        messageAdapter.add(message);
                 }
 
                 @Override

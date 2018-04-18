@@ -156,14 +156,17 @@ public class AddContacts extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Contact contact = new Contact(nameView.getText().toString(), emailView.getText().toString(), relationView.getText().toString(), email);
+                Contact contact = new Contact(nameView.getText().toString().trim().toLowerCase(), emailView.getText().toString().trim(), relationView.getText().toString().trim().toLowerCase(), email);
 
-
-                databaseReference.push().setValue(contact);
-                nameView.setText("");
-                emailView.setText("");
-                relationView.setText("");
-                Intent mIntent = new Intent(currentActivity, MainActivity.class);
+                if(emailView.getText().toString().contains("@")) {
+                    databaseReference.push().setValue(contact);
+                    nameView.setText("");
+                    emailView.setText("");
+                    relationView.setText("");
+                    Intent mIntent = new Intent(currentActivity, MainActivity.class);
+                }else{
+                    Toast.makeText(AddContacts.this, "invalid email address", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

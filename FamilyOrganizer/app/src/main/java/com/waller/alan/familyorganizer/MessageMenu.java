@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -88,20 +89,19 @@ public class MessageMenu extends AppCompatActivity {
         contactAdapter = new ContactAdapter(this, R.layout.item_contact, contacts);
         contactListView.setAdapter(contactAdapter);
 
-        /*contactListView.setOnItemClickListener(new OnItemClickListener() {
+        contactListView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Cursor cursor = (Cursor) contactListView.getItemAtPosition(position);
-                //iD = cursor.getLong(cursor.getColumnIndexOrThrow("_id"));
-                //Toast.makeText(getActivity(), iD + "", Toast.LENGTH_LONG).show();
+                TextView tv = (TextView) view.findViewById(R.id.nameTextView);
+                String name = tv.getText().toString();
+
                 Intent result = new Intent(getApplicationContext(), MessageActivity.class);
-                // intent.putExtra("ID", iD); you will need to have it put the name of the contact for use in the message activity (this will be used to only get messages
-                //to and from the named contact
+                result.putExtra("name", name); //you will need to have it put the name of the contact for use in the message activity (this will be used to only get messages to and from the named contact
                 startActivity(result);
 
             }
-        });*/
+        });
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
