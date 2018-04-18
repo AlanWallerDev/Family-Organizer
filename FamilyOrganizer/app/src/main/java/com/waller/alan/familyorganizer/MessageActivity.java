@@ -106,7 +106,7 @@ public class MessageActivity extends AppCompatActivity {
         photoPickerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Fire an intent to show an image picker
+                // TODO: remove all image functionality
             }
         });
 
@@ -212,7 +212,7 @@ public class MessageActivity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Send messages on click
+                //Send messages on click
                 String email = firebaseAuth.getCurrentUser().getEmail();
                 Message message = new Message(messageEditText.getText().toString(),username, contactEmail);
 
@@ -289,7 +289,6 @@ public class MessageActivity extends AppCompatActivity {
             childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    //TODO: Add functionality when database is updated here
                     Message message = dataSnapshot.getValue(Message.class);
                     Log.d(TAG, "Message name: " + message.getName() + ", Message reciever: " + message.getReceiver() + ", User email: " + firebaseAuth.getCurrentUser().getEmail());
                     if((message.getName().trim().toLowerCase().equals(contact) && message.getReceiver().trim().toLowerCase().equals(firebaseAuth.getCurrentUser().getEmail()))

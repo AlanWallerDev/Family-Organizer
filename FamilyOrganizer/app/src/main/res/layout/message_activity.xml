@@ -44,11 +44,7 @@
             android:orientation="horizontal"
             android:id="@+id/linearLayout2">
 
-            <ImageButton
-                android:id="@+id/photoPickerButton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:background="@android:drawable/ic_menu_gallery" />
+
 
             <EditText
                 android:id="@+id/messageEditText"

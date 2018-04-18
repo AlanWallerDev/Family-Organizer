@@ -28,7 +28,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    //TODO: Set up navigation drawer in on create https://developer.android.com/training/implementing-navigation/nav-drawer.html
     private static final String ANONYMOUS = "anonymous";
     private static final int RC_SIGN_IN = 100;
     private static final String TAG = "Main Activity";
@@ -184,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkForFirstTime(String uID){
-
+    //todo first time sign in?
     }
 
 
@@ -207,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
             childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    //TODO: Add functionality when database is updated here
 
                 }
 
