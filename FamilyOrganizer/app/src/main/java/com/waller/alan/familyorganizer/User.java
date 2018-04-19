@@ -5,7 +5,6 @@ package com.waller.alan.familyorganizer;
  */
 
 public class User {
-    //TODO: figure out how to create user database that doesnt cause duplicates
     private String username;
     private String email;
 

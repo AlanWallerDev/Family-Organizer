@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * Created by Alan on 4/15/2018.
  */
-//todo: create activity which allows you to select from your contacts and when contact is selected
+//activity which allows you to select from your contacts and when contact is selected
     // open a message activity that pulls all messages to and from that contact
 
 public class MessageMenu extends AppCompatActivity {
@@ -234,7 +234,6 @@ public class MessageMenu extends AppCompatActivity {
             childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    //TODO: Add functionality when database is updated here
                     Contact contact = dataSnapshot.getValue(Contact.class);
                     Log.d(TAG, contact.getEmail());
                     Log.d(TAG, firebaseAuth.getCurrentUser().getEmail().toString());
