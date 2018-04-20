@@ -32,6 +32,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.w3c.dom.Text;
 
 import java.util.Arrays;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -64,6 +66,7 @@ public class AddEvent extends AppCompatActivity {
     private CalendarView datePicker;
     private TextView nameTextView;
     private TextView descTextView;
+    private long selectedDate;
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +89,13 @@ public class AddEvent extends AppCompatActivity {
         datePicker = (CalendarView) findViewById(R.id.datePicker);
         nameTextView = (TextView) findViewById(R.id.eventNameInput);
         descTextView = (TextView) findViewById(R.id.descriptionInput);
+
+        datePicker.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
+                selectedDate = calendarView.getDate();
+            }
+        });
 
         final List<AuthUI.IdpConfig> providers = Arrays.asList(
 
@@ -156,6 +166,10 @@ public class AddEvent extends AppCompatActivity {
                                 break;
                             case R.id.add_event:
                                 Toast.makeText(AddEvent.this, "You are already in the Add Event Activity", Toast.LENGTH_SHORT).show();
+                            case R.id.events:
+                                Intent EIntent = new Intent(currentActivity, EventActivity.class);
+                                startActivity(EIntent);
+                                break;
                         }
 
 
@@ -166,8 +180,8 @@ public class AddEvent extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Event event = new Event(firebaseAuth.getCurrentUser().getEmail(), nameTextView.getText().toString().toLowerCase().trim(), datePicker.getDate(), descTextView.getText().toString().toLowerCase().trim());
-                String child = event.getOwner() + event.getStartDate() + event.getDescription();
+                Event event = new Event(firebaseAuth.getCurrentUser().getEmail(), nameTextView.getText().toString().toLowerCase().trim(), selectedDate, descTextView.getText().toString().toLowerCase().trim());
+                String child = event.getOwner() + event.getStartDate() + event.getName();
                 String childID = child.replace(".", "");
 
 

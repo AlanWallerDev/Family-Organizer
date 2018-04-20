@@ -1,11 +1,318 @@
 package com.waller.alan.familyorganizer;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MenuItem;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by Alan on 4/15/2018.
  */
-//todo: create an activity that allows the user to create events, and see events created by themselves or people on their contacts
-    //optionally, maybe allow the user to add events to their contacts?
 public class EventActivity extends AppCompatActivity {
+
+    private static final String ANONYMOUS = "anonymous";
+    private static final int RC_SIGN_IN = 100;
+    private static final String TAG = "Event Activity";
+
+    private DrawerLayout drawerLayout;
+    private String username;
+    private static Context currentActivity;
+
+    //entrypoint to the firebase real time database
+    private FirebaseDatabase firebaseDatabase;
+    //holds the reference for our messages objects in the database
+    private DatabaseReference databaseReference;
+    private DatabaseReference contactsDatabaseReference;
+    private ChildEventListener childEventListener;
+    private ChildEventListener contactsChildEventListener;
+
+    //handles connection with firebase authentication
+    private FirebaseAuth firebaseAuth;
+    //looks for AuthState Change
+    private FirebaseAuth.AuthStateListener authStateListener;
+
+    private EventAdapter eventAdapter;
+    private ListView eventListView;
+    private List<Contact> contacts;
+    private String[] userContacts;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.event_activity);
+        currentActivity = this;
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
+
+        eventListView = (ListView) findViewById(R.id.eventListView);
+
+        // Initialize message ListView and its adapter
+        List<Event> events = new ArrayList<>();
+        contacts = new ArrayList<>();
+        eventAdapter = new EventAdapter(this, R.layout.item_message, events);
+        eventListView.setAdapter(eventAdapter);
+
+        username = ANONYMOUS;
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        databaseReference = firebaseDatabase.getReference().child("events");
+        contactsDatabaseReference = firebaseDatabase.getReference().child("contacts");
+        attachContactsDatabaseListener();
+        Log.d(TAG, "All Contacts in List: " + contacts.toString());
+
+
+
+
+
+
+        final List<AuthUI.IdpConfig> providers = Arrays.asList(
+
+                new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+                new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()
+
+        );
+
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            //two events call this
+            //when user changes state
+            //when listener is first attached to auth service
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if(user != null){
+                    //logged in state
+                    onSignedIn(user.getDisplayName());
+
+                }else{
+                    //logged out state
+                    onSignedOutCleanup();
+
+                    startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers).build(), RC_SIGN_IN);
+                }
+            }
+        };
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        // set item as selected to persist highlight
+                        menuItem.setChecked(true);
+                        // close drawer when item is tapped
+                        drawerLayout.closeDrawers();
+
+                        // Add code here to update the UI based on the item selected
+                        // For example, swap UI fragments here
+
+                        switch(menuItem.getItemId()){
+                            case R.id.sign_out_menu:
+                                AuthUI.getInstance().signOut(EventActivity.this);
+                                Intent intent = new Intent(currentActivity, MainActivity.class);
+                                startActivity(intent);
+                                break;
+                            case R.id.messages_menu:
+                                Intent intent3 = new Intent(currentActivity, MessageMenu.class);
+                                startActivity(intent3);
+                                break;
+
+                            case R.id.main_menu:
+                                intent = new Intent(currentActivity, MainActivity.class);
+                                startActivity(intent);
+                                break;
+                            case R.id.contacts_menu:
+                                Intent ACIntent = new Intent(currentActivity, ContactEditor.class);
+                                startActivity(ACIntent);
+                                break;
+                            case R.id.add_event:
+                                Intent AEIntent = new Intent(currentActivity, AddEvent.class);
+                                startActivity(AEIntent);
+                                break;
+                            case R.id.events:
+                                Toast.makeText(EventActivity.this, "You are already in the events activity!", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+
+                        return true;
+                    }
+                });
+
+
+
+
+    }
+
+
+    protected void onResume(){
+
+        super.onResume();
+        if(firebaseAuth != null) {
+            firebaseAuth.addAuthStateListener(authStateListener);
+        }
+
+    }
+
+    protected void onPause(){
+
+        super.onPause();
+        if(authStateListener != null){
+            firebaseAuth.removeAuthStateListener(authStateListener);
+        }
+        eventAdapter.clear();
+        detachDatabaseListener();
+
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.sign_out_menu:
+                AuthUI.getInstance().signOut(EventActivity.this);
+                break;
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void onSignedIn(String nUsername){
+        Log.d(TAG, "Signed In");
+        username = nUsername;
+        attachDatabaseListener();
+
+    }
+
+    private void onSignedOutCleanup(){
+
+        username = ANONYMOUS;
+        detachDatabaseListener();
+
+    }
+
+    private void detachDatabaseListener(){
+        if(databaseReference != null && childEventListener != null){
+            databaseReference.removeEventListener(childEventListener);
+            childEventListener = null;
+        }
+    }
+
+    private void attachContactsDatabaseListener(){
+        if(contactsChildEventListener == null) {
+            contactsChildEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                    Contact contact = dataSnapshot.getValue(Contact.class);
+                    Log.d(TAG, "Contact: " + contact.getDisplayName().toString());
+                    //if(contact.getContactOwner().toString().toLowerCase().trim().equals(firebaseAuth.getCurrentUser().getEmail().toString().toLowerCase().trim()))
+                    contacts.add(contact);
+                    Log.d(TAG, "All Contacts in List: " + contacts.toString());
+
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+            contactsDatabaseReference.addChildEventListener(contactsChildEventListener);
+        }
+
+
+    }
+
+    private void attachDatabaseListener(){
+        if(childEventListener == null) {
+            childEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    userContacts = new String[contacts.size()];
+                    for(int i = 0; i < contacts.size(); i++){
+                        userContacts[i] = contacts.get(i).getEmail();
+                    }
+                    Log.d(TAG, "Contacts pulled: " + Arrays.toString(userContacts));
+                    Event event = dataSnapshot.getValue(Event.class);
+                    if(Arrays.asList(userContacts).contains(event.getOwner())) {
+                        Log.d(TAG, "Added: " + event.getOwner() + event.getName() + " Date Long: " + event.getStartDate());
+                        eventAdapter.add(event);
+                    }
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+
+
+            databaseReference.addChildEventListener(childEventListener);
+        }
+    }
 }
+
+
+
