@@ -3,7 +3,6 @@ package com.waller.alan.familyorganizer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -20,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -59,7 +59,6 @@ public class AddContacts extends AppCompatActivity {
 
     private TextView emailView;
     private TextView nameView;
-    private TextView relationView;
     private Button addButton;
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,7 +73,6 @@ public class AddContacts extends AppCompatActivity {
 
         emailView = (TextView) findViewById(R.id.emailView);
         nameView = (TextView) findViewById(R.id.nameView);
-        relationView = (TextView) findViewById(R.id.relationView);
         addButton = (Button) findViewById(R.id.addButton);
 
         username = ANONYMOUS;
@@ -143,8 +141,13 @@ public class AddContacts extends AppCompatActivity {
                                 intent = new Intent(currentActivity, MainActivity.class);
                                 startActivity(intent);
                                 break;
+                            case R.id.contacts_menu:
+                                Intent CIntent = new Intent(currentActivity, ContactEditor.class);
+                                startActivity(CIntent);
+                                break;
                             case R.id.add_contacts_menu:
                                 Toast.makeText(currentActivity, "You are currently in the Add Contact Activity", Toast.LENGTH_SHORT).show();
+
                                 break;
                         }
 
@@ -152,23 +155,27 @@ public class AddContacts extends AppCompatActivity {
                         return true;
                     }
                 });
-//todo: check all users of database to see if the submitted email address and name are valid
-        //how do I check the validated users of my firebase database??
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Contact contact = new Contact(nameView.getText().toString().trim().toLowerCase(), emailView.getText().toString().trim(), relationView.getText().toString().trim().toLowerCase(), email);
-
-                if(emailView.getText().toString().contains("@")) {
-                    databaseReference.push().setValue(contact);
-                    nameView.setText("");
-                    emailView.setText("");
-                    relationView.setText("");
-                    Intent mIntent = new Intent(currentActivity, MainActivity.class);
-                }else{
-                    Toast.makeText(AddContacts.this, "invalid email address", Toast.LENGTH_SHORT).show();
+                Contact contact = new Contact(nameView.getText().toString().trim().toLowerCase(), emailView.getText().toString().trim(), email);
+                String child = contact.getDisplayName() + contact.getEmail() + contact.getContactOwner();
+                child = child.replace(".", "");
+                try {
+                    if (emailView.getText().toString().contains("@")) {
+                        databaseReference.child(child).setValue(contact);
+                        nameView.setText("");
+                        emailView.setText("");
+                        Intent mIntent = new Intent(currentActivity, MainActivity.class);
+                    } else {
+                        Toast.makeText(AddContacts.this, "invalid email address", Toast.LENGTH_SHORT).show();
+                    }
+                }catch(Exception e){
+                    Toast.makeText(AddContacts.this, "This Contact Already Exists", Toast.LENGTH_SHORT).show();
                 }
+                Intent CIntent = new Intent(currentActivity, ContactEditor.class);
+                startActivity(CIntent);
             }
         });
     }
@@ -234,14 +241,13 @@ public class AddContacts extends AppCompatActivity {
             childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    //TODO: Add functionality when database is updated here
                     Log.d(TAG, "Contact Added");
 
                 }
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    //todo: determine how to prevent duplicate contacts
+
                 }
 
                 @Override

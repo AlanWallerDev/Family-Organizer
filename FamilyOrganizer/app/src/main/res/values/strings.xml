@@ -7,4 +7,6 @@
     <string name="messages">Messages</string>
     <string name="main_menu">Main Menu</string>
     <string name="add_contacts">Add Contact</string>
+    <string name="contacts">Contacts</string>
+    <string name="correctness_warning">Name and Email must be exactly correct!</string>
 </resources>

@@ -29,6 +29,12 @@
         <activity android:name=".MessageMenu"
             android:label="Family Organizer"
             android:theme="@style/AppTheme"></activity>
+        <activity android:name=".ContactEditor"
+            android:label="Family Organizer"
+            android:theme="@style/AppTheme"></activity>
+        <activity android:name=".EditingContact"
+            android:label="Family Organizer"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

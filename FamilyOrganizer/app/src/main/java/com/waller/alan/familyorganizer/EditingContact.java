@@ -14,13 +14,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -29,28 +28,22 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by Alan on 4/15/2018.
+ * Created by t00053669 on 3/28/2018.
  */
-//activity which allows you to select from your contacts and when contact is selected
-    // open a message activity that pulls all messages to and from that contact
 
-public class MessageMenu extends AppCompatActivity {
-
+public class EditingContact extends AppCompatActivity {
     private static final String ANONYMOUS = "anonymous";
+    private static final String TAG = "Editing Contact Activity";
     private static final int RC_SIGN_IN = 100;
-    private static final String TAG = "Message Menu Activity";
-    private static Context currentActivity;
 
     private DrawerLayout drawerLayout;
-
     private String username;
-    private String userID;
-
+    private String email;
+    private static Context currentActivity;
 
     //entrypoint to the firebase real time database
     private FirebaseDatabase firebaseDatabase;
@@ -64,45 +57,30 @@ public class MessageMenu extends AppCompatActivity {
     //looks for AuthState Change
     private FirebaseAuth.AuthStateListener authStateListener;
 
-    private ListView contactListView;
-    private ContactAdapter contactAdapter;
+    private TextView emailView;
+    private TextView nameView;
+    private Button addButton;
+    private Button delButton;
 
-    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.message_menu);
+        setContentView(R.layout.editing_contact);
         currentActivity = this;
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        Intent intent = getIntent();
+        final String contactID = intent.getStringExtra("id");
 
-        contactListView = (ListView) findViewById(R.id.contactListView);
+        emailView = (TextView) findViewById(R.id.emailView);
+        nameView = (TextView) findViewById(R.id.nameView);
+        addButton = (Button) findViewById(R.id.addButton);
+        delButton = (Button) findViewById(R.id.delButton);
 
         username = ANONYMOUS;
-
-        // Initialize message ListView and its adapter
-        List<Contact> contacts = new ArrayList<>();
-        contactAdapter = new ContactAdapter(this, R.layout.item_contact, contacts);
-        contactListView.setAdapter(contactAdapter);
-
-        contactListView.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                TextView tv = (TextView) view.findViewById(R.id.nameTextView);
-                TextView tv2 = (TextView) view.findViewById(R.id.emailTextView);
-                String name = tv.getText().toString();
-                String email = tv2.getText().toString();
-                Log.d(TAG, name + " " + email);
-                Intent result = new Intent(getApplicationContext(), MessageActivity.class);
-                result.putExtra("name", name); //you will need to have it put the name of the contact for use in the message activity (this will be used to only get messages to and from the named contact
-                result.putExtra("email", email);
-                startActivity(result);
-
-            }
-        });
+        email = ANONYMOUS;
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
@@ -125,6 +103,8 @@ public class MessageMenu extends AppCompatActivity {
                 if(user != null){
                     //logged in state
                     onSignedIn(user.getDisplayName());
+                    email = user.getEmail();
+
 
                 }else{
                     //logged out state
@@ -152,22 +132,27 @@ public class MessageMenu extends AppCompatActivity {
 
                         switch(menuItem.getItemId()){
                             case R.id.sign_out_menu:
-                                AuthUI.getInstance().signOut(MessageMenu.this);
-                                break;
-                            case R.id.messages_menu:
-                                Toast.makeText(currentActivity, "You are currently in the Message Activity", Toast.LENGTH_SHORT).show();
-                                break;
-                            case R.id.main_menu:
+                                AuthUI.getInstance().signOut(EditingContact.this);
                                 Intent intent = new Intent(currentActivity, MainActivity.class);
                                 startActivity(intent);
                                 break;
+                            case R.id.messages_menu:
+                                Intent MIntent = new Intent(currentActivity, MessageMenu.class);
+                                startActivity(MIntent);
+                                break;
+
+                            case R.id.main_menu:
+                                intent = new Intent(currentActivity, MainActivity.class);
+                                startActivity(intent);
+                                break;
                             case R.id.contacts_menu:
-                                Intent ACIntent = new Intent(currentActivity, ContactEditor.class);
-                                startActivity(ACIntent);
+                                Intent CIntent = new Intent(currentActivity, ContactEditor.class);
+                                startActivity(CIntent);
                                 break;
                             case R.id.add_contacts_menu:
-                                Intent CIntent = new Intent(currentActivity, AddContacts.class);
-                                startActivity(CIntent);
+                                Intent CAIntent = new Intent(currentActivity, AddContacts.class);
+                                startActivity(CAIntent);
+
                                 break;
                         }
 
@@ -176,9 +161,42 @@ public class MessageMenu extends AppCompatActivity {
                     }
                 });
 
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Contact contact = new Contact(nameView.getText().toString().trim().toLowerCase(), emailView.getText().toString().trim(), email);
+                String child = contact.getDisplayName() + contact.getEmail() + contact.getContactOwner();
+                child = child.replace(".", "");
+                try {
+                    if (emailView.getText().toString().contains("@")) {
+                        databaseReference.child(contactID).removeValue();
+                        databaseReference.child(child).setValue(contact);
+                        nameView.setText("");
+                        emailView.setText("");
+                        Intent mIntent = new Intent(currentActivity, MainActivity.class);
+                    } else {
+                        Toast.makeText(EditingContact.this, "invalid email address", Toast.LENGTH_SHORT).show();
+                    }
+                }catch(Exception e){
+                    Toast.makeText(EditingContact.this, "This Contact Already Exists", Toast.LENGTH_SHORT).show();
+                }
+                Intent CIntent = new Intent(currentActivity, ContactEditor.class);
+                startActivity(CIntent);
+            }
+        });
+
+        delButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                databaseReference.child(contactID).removeValue();
+                Intent CIntent = new Intent(currentActivity, ContactEditor.class);
+                startActivity(CIntent);
+            }
+        });
     }
-    //todo: Figure out how to clear the views on pause so the list does not duplicate
+
     protected void onResume(){
+
         super.onResume();
         if(firebaseAuth != null) {
             firebaseAuth.addAuthStateListener(authStateListener);
@@ -187,6 +205,7 @@ public class MessageMenu extends AppCompatActivity {
     }
 
     protected void onPause(){
+
         super.onPause();
         if(authStateListener != null){
             firebaseAuth.removeAuthStateListener(authStateListener);
@@ -201,7 +220,7 @@ public class MessageMenu extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.sign_out_menu:
-                AuthUI.getInstance().signOut(MessageMenu.this);
+                AuthUI.getInstance().signOut(EditingContact.this);
                 break;
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
@@ -209,6 +228,7 @@ public class MessageMenu extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     private void onSignedIn(String nUsername){
         Log.d(TAG, "Signed In");
@@ -236,17 +256,13 @@ public class MessageMenu extends AppCompatActivity {
             childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Contact contact = dataSnapshot.getValue(Contact.class);
-                    Log.d(TAG, contact.getEmail());
-                    Log.d(TAG, firebaseAuth.getCurrentUser().getEmail().toString());
-                    if(contact.getContactOwner().equals(firebaseAuth.getCurrentUser().getEmail().toString()))
-                        contactAdapter.add(contact);
+                    Log.d(TAG, "Contact Added");
 
                 }
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                    //todo: determine how to prevent duplicate contacts
                 }
 
                 @Override

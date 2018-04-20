@@ -125,9 +125,13 @@ public class MainActivity extends AppCompatActivity {
                             case R.id.main_menu:
                                 Toast.makeText(currentActivity, "You are currently in the Main Activity", Toast.LENGTH_SHORT).show();
                                 break;
-                            case R.id.add_contacts_menu:
-                                Intent ACIntent = new Intent(currentActivity, AddContacts.class);
+                            case R.id.contacts_menu:
+                                Intent ACIntent = new Intent(currentActivity, ContactEditor.class);
                                 startActivity(ACIntent);
+                                break;
+                            case R.id.add_contacts_menu:
+                                Intent CIntent = new Intent(currentActivity, AddContacts.class);
+                                startActivity(CIntent);
                                 break;
                         }
 

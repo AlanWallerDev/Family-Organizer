@@ -9,19 +9,16 @@ public class Contact {
     private String displayName;
     private String email;
     private String contactOwner;
-    private String relationship;
 
     public Contact(){
         displayName = "";
         email = "";
-        relationship = "";
         contactOwner = "";
     }
 
-    public Contact(String displayName, String email, String relationship, String contactOwner) {
+    public Contact(String displayName, String email, String contactOwner) {
         this.displayName = displayName;
         this.email = email;
-        this.relationship = relationship;
         this.contactOwner = contactOwner;
     }
 
@@ -39,14 +36,6 @@ public class Contact {
 
     public void setEmail(String userName) {
         this.email = userName;
-    }
-
-    public String getRelationship() {
-        return relationship;
-    }
-
-    public void setRelationship(String relationship) {
-        this.relationship = relationship;
     }
 
     public String getContactOwner() {

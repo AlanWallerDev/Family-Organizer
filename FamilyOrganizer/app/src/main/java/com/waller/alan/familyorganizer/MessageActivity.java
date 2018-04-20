@@ -22,7 +22,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
@@ -86,7 +85,6 @@ public class MessageActivity extends AppCompatActivity {
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         messageListView = (ListView) findViewById(R.id.messageListView);
-        photoPickerButton = (ImageButton) findViewById(R.id.photoPickerButton);
         messageEditText = (EditText) findViewById(R.id.messageEditText);
         sendButton = (Button) findViewById(R.id.sendButton);
         Intent intent = getIntent();
@@ -101,15 +99,6 @@ public class MessageActivity extends AppCompatActivity {
 
         // Initialize progress bar
         progressBar.setVisibility(ProgressBar.INVISIBLE);
-
-        // ImagePickerButton shows an image picker to upload a image for a message
-        photoPickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: remove all image functionality
-            }
-        });
-
         messageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -197,8 +186,8 @@ public class MessageActivity extends AppCompatActivity {
                                 intent = new Intent(currentActivity, MainActivity.class);
                                 startActivity(intent);
                                 break;
-                            case R.id.add_contacts_menu:
-                                Intent ACIntent = new Intent(currentActivity, AddContacts.class);
+                            case R.id.contacts_menu:
+                                Intent ACIntent = new Intent(currentActivity, ContactEditor.class);
                                 startActivity(ACIntent);
                                 break;
                         }
