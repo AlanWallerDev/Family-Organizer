@@ -27,5 +27,10 @@
         android:icon="@drawable/ic_search_black_24dp"
         android:title="@string/contacts"
         app:showAsAction="never"/>
+    <item
+        android:id = "@+id/add_event"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="@string/add_event"
+        app:showAsAction="never"/>
 
 </menu>

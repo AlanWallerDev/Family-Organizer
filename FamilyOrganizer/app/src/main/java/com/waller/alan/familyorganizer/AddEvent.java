@@ -15,11 +15,12 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CalendarView;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -28,16 +29,18 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.w3c.dom.Text;
+
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by t00053669 on 3/28/2018.
+ * Created by Alan on 4/19/2018.
  */
 
-public class EditingContact extends AppCompatActivity {
+public class AddEvent extends AppCompatActivity {
     private static final String ANONYMOUS = "anonymous";
-    private static final String TAG = "Editing Contact Activity";
+    private static final String TAG = "Add Event Activity";
     private static final int RC_SIGN_IN = 100;
 
     private DrawerLayout drawerLayout;
@@ -57,34 +60,32 @@ public class EditingContact extends AppCompatActivity {
     //looks for AuthState Change
     private FirebaseAuth.AuthStateListener authStateListener;
 
-    private TextView emailView;
-    private TextView nameView;
     private Button addButton;
-    private Button delButton;
+    private CalendarView datePicker;
+    private TextView nameTextView;
+    private TextView descTextView;
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.editing_contact);
+        setContentView(R.layout.add_event);
         currentActivity = this;
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
-        Intent intent = getIntent();
-        final String contactID = intent.getStringExtra("id");
-
-        emailView = (TextView) findViewById(R.id.emailView);
-        nameView = (TextView) findViewById(R.id.nameView);
-        addButton = (Button) findViewById(R.id.addButton);
-        delButton = (Button) findViewById(R.id.delButton);
 
         username = ANONYMOUS;
         email = ANONYMOUS;
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
-        databaseReference = firebaseDatabase.getReference().child("contacts");
+        databaseReference = firebaseDatabase.getReference().child("events");
+
+        addButton = (Button) findViewById(R.id.eventAddButton);
+        datePicker = (CalendarView) findViewById(R.id.datePicker);
+        nameTextView = (TextView) findViewById(R.id.eventNameInput);
+        descTextView = (TextView) findViewById(R.id.descriptionInput);
 
         final List<AuthUI.IdpConfig> providers = Arrays.asList(
 
@@ -132,7 +133,7 @@ public class EditingContact extends AppCompatActivity {
 
                         switch(menuItem.getItemId()){
                             case R.id.sign_out_menu:
-                                AuthUI.getInstance().signOut(EditingContact.this);
+                                AuthUI.getInstance().signOut(AddEvent.this);
                                 Intent intent = new Intent(currentActivity, MainActivity.class);
                                 startActivity(intent);
                                 break;
@@ -152,12 +153,9 @@ public class EditingContact extends AppCompatActivity {
                             case R.id.add_contacts_menu:
                                 Intent CAIntent = new Intent(currentActivity, AddContacts.class);
                                 startActivity(CAIntent);
-
                                 break;
                             case R.id.add_event:
-                                Intent AEIntent = new Intent(currentActivity, AddEvent.class);
-                                startActivity(AEIntent);
-                                break;
+                                Toast.makeText(AddEvent.this, "You are already in the Add Event Activity", Toast.LENGTH_SHORT).show();
                         }
 
 
@@ -168,36 +166,20 @@ public class EditingContact extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Contact contact = new Contact(nameView.getText().toString().trim().toLowerCase(), emailView.getText().toString().trim(), email);
-                String child = contact.getDisplayName() + contact.getEmail() + contact.getContactOwner();
-                child = child.replace(".", "");
-                try {
-                    if (emailView.getText().toString().contains("@")) {
-                        databaseReference.child(contactID).removeValue();
-                        databaseReference.child(child).setValue(contact);
-                        nameView.setText("");
-                        emailView.setText("");
-                        Intent mIntent = new Intent(currentActivity, MainActivity.class);
-                    } else {
-                        Toast.makeText(EditingContact.this, "invalid email address", Toast.LENGTH_SHORT).show();
-                    }
-                }catch(Exception e){
-                    Toast.makeText(EditingContact.this, "This Contact Already Exists", Toast.LENGTH_SHORT).show();
-                }
-                Intent CIntent = new Intent(currentActivity, ContactEditor.class);
+                Event event = new Event(firebaseAuth.getCurrentUser().getEmail(), nameTextView.getText().toString().toLowerCase().trim(), datePicker.getDate(), descTextView.getText().toString().toLowerCase().trim());
+                String child = event.getOwner() + event.getStartDate() + event.getDescription();
+                String childID = child.replace(".", "");
+
+
+                databaseReference.child(childID).setValue(event);
+
+                Intent CIntent = new Intent(currentActivity, AddEvent.class);
                 startActivity(CIntent);
             }
         });
 
-        delButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                databaseReference.child(contactID).removeValue();
-                Intent CIntent = new Intent(currentActivity, ContactEditor.class);
-                startActivity(CIntent);
-            }
-        });
     }
+
 
     protected void onResume(){
 
@@ -224,7 +206,7 @@ public class EditingContact extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.sign_out_menu:
-                AuthUI.getInstance().signOut(EditingContact.this);
+                AuthUI.getInstance().signOut(AddEvent.this);
                 break;
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
@@ -260,12 +242,13 @@ public class EditingContact extends AppCompatActivity {
             childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Log.d(TAG, "Contact Added");
+                    Log.d(TAG, "Event Added");
 
                 }
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
                 }
 
                 @Override
@@ -289,3 +272,5 @@ public class EditingContact extends AppCompatActivity {
         }
     }
 }
+
+

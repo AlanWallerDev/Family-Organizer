@@ -149,6 +149,10 @@ public class AddContacts extends AppCompatActivity {
                                 Toast.makeText(currentActivity, "You are currently in the Add Contact Activity", Toast.LENGTH_SHORT).show();
 
                                 break;
+                            case R.id.add_event:
+                                Intent AEIntent = new Intent(currentActivity, AddEvent.class);
+                                startActivity(AEIntent);
+                                break;
                         }
 
 

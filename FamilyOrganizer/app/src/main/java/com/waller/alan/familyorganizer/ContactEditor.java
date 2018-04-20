@@ -175,6 +175,10 @@ public class ContactEditor extends AppCompatActivity {
                                 Intent CIntent = new Intent(currentActivity, AddContacts.class);
                                 startActivity(CIntent);
                                 break;
+                            case R.id.add_event:
+                                Intent AEIntent = new Intent(currentActivity, AddEvent.class);
+                                startActivity(AEIntent);
+                                break;
                         }
 
 

@@ -9,4 +9,5 @@
     <string name="add_contacts">Add Contact</string>
     <string name="contacts">Contacts</string>
     <string name="correctness_warning">Name and Email must be exactly correct!</string>
+    <string name="add_event">Add Event</string>
 </resources>

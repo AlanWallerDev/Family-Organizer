@@ -190,6 +190,10 @@ public class MessageActivity extends AppCompatActivity {
                                 Intent ACIntent = new Intent(currentActivity, ContactEditor.class);
                                 startActivity(ACIntent);
                                 break;
+                            case R.id.add_event:
+                                Intent AEIntent = new Intent(currentActivity, AddEvent.class);
+                                startActivity(AEIntent);
+                                break;
                         }
 
 

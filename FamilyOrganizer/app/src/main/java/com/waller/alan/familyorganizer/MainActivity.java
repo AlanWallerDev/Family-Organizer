@@ -12,6 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CalendarView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -22,6 +25,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import org.w3c.dom.Text;
 
 import java.util.Arrays;
 import java.util.List;
@@ -133,6 +138,10 @@ public class MainActivity extends AppCompatActivity {
                                 Intent CIntent = new Intent(currentActivity, AddContacts.class);
                                 startActivity(CIntent);
                                 break;
+                            case R.id.add_event:
+                                Intent AEIntent = new Intent(currentActivity, AddEvent.class);
+                                startActivity(AEIntent);
+                                break;
                         }
 
 
@@ -184,10 +193,6 @@ public class MainActivity extends AppCompatActivity {
         username = nUsername;
         attachDatabaseListener();
 
-    }
-
-    private void checkForFirstTime(String uID){
-    //todo first time sign in?
     }
 
 

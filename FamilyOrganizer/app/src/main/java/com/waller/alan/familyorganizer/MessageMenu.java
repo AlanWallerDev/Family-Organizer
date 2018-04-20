@@ -169,6 +169,10 @@ public class MessageMenu extends AppCompatActivity {
                                 Intent CIntent = new Intent(currentActivity, AddContacts.class);
                                 startActivity(CIntent);
                                 break;
+                            case R.id.add_event:
+                                Intent AEIntent = new Intent(currentActivity, AddEvent.class);
+                                startActivity(AEIntent);
+                                break;
                         }
 
 
@@ -177,7 +181,6 @@ public class MessageMenu extends AppCompatActivity {
                 });
 
     }
-    //todo: Figure out how to clear the views on pause so the list does not duplicate
     protected void onResume(){
         super.onResume();
         if(firebaseAuth != null) {
