@@ -191,7 +191,7 @@ public class MessageMenu extends AppCompatActivity {
         if(authStateListener != null){
             firebaseAuth.removeAuthStateListener(authStateListener);
         }
-
+        contactAdapter.clear();
         detachDatabaseListener();
 
     }

@@ -262,7 +262,6 @@ public class EditingContact extends AppCompatActivity {
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    //todo: determine how to prevent duplicate contacts
                 }
 
                 @Override

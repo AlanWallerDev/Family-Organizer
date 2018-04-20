@@ -190,6 +190,7 @@ public class ContactEditor extends AppCompatActivity {
             firebaseAuth.addAuthStateListener(authStateListener);
         }
 
+
     }
 
     protected void onPause(){
@@ -197,7 +198,7 @@ public class ContactEditor extends AppCompatActivity {
         if(authStateListener != null){
             firebaseAuth.removeAuthStateListener(authStateListener);
         }
-
+        contactAdapter.clear();
         detachDatabaseListener();
 
     }

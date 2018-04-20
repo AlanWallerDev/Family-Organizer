@@ -232,7 +232,7 @@ public class MessageActivity extends AppCompatActivity {
         if(authStateListener != null){
             firebaseAuth.removeAuthStateListener(authStateListener);
         }
-
+        messageAdapter.clear();
         detachDatabaseListener();
 
     }
