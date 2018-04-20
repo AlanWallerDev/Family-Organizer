@@ -92,8 +92,12 @@ public class AddEvent extends AppCompatActivity {
 
         datePicker.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
-            public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
-                selectedDate = calendarView.getDate();
+            public void onSelectedDayChange(@NonNull CalendarView calendarView, int year, int month, int day) {
+                month = month + 1;
+                String date = year + "/" + month + "/" + day;
+                Log.d(TAG, "Date: " + date);
+                selectedDate = Date.parse(date);
+                Log.d(TAG, "Selected date is " + selectedDate);
             }
         });
 
