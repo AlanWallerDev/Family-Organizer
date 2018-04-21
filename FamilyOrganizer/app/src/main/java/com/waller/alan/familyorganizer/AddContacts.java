@@ -77,18 +77,18 @@ public class AddContacts extends AppCompatActivity {
 
         username = ANONYMOUS;
         email = ANONYMOUS;
-
+        //initialize database connection
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
         databaseReference = firebaseDatabase.getReference().child("contacts");
-
+        //list of allowed methods for sign in
         final List<AuthUI.IdpConfig> providers = Arrays.asList(
 
                 new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
                 new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()
 
         );
-
+        //check if user is signed in
         authStateListener = new FirebaseAuth.AuthStateListener() {
             //two events call this
             //when user changes state
@@ -112,7 +112,7 @@ public class AddContacts extends AppCompatActivity {
         };
 
         drawerLayout = findViewById(R.id.drawer_layout);
-
+        //on click events for the navigation drawer
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -163,7 +163,7 @@ public class AddContacts extends AppCompatActivity {
                         return true;
                     }
                 });
-
+        //add contact on button click
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -28,8 +28,11 @@ public class EventAdapter extends ArrayAdapter<Event> {
         TextView nameTextView = (TextView) convertView.findViewById(R.id.nameTextView);
         TextView descTextView = (TextView) convertView.findViewById(R.id.descTextView);
         CalendarView calView = (CalendarView) convertView.findViewById(R.id.calView);
+        TextView ownerTextView = (TextView) convertView.findViewById(R.id.ownerView);
 
         Event event = getItem(position);
+
+        ownerTextView.setText("Creator: " + event.getOwner());
 
         nameTextView.setVisibility(View.VISIBLE);
         nameTextView.setText(event.getName());

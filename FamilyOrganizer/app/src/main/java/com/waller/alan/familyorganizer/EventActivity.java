@@ -162,6 +162,10 @@ public class EventActivity extends AppCompatActivity {
                             case R.id.events:
                                 Toast.makeText(EventActivity.this, "You are already in the events activity!", Toast.LENGTH_SHORT).show();
                                 break;
+                            case R.id.add_contacts_menu:
+                                Intent CAIntent = new Intent(currentActivity, AddContacts.class);
+                                startActivity(CAIntent);
+                                break;
                         }
 
                         return true;
